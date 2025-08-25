@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
+/* Tema & background */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #0b1220;
+  --fg: #e5e7eb;
+  --blob1: rgba(79, 70, 229, 0.22);
+  --blob2: rgba(236, 72, 153, 0.18);
+  --blob3: rgba(59, 130, 246, 0.18);
 }
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #ffffff;
+    --fg: #171717;
+    --blob1: rgba(79, 70, 229, 0.18);
+    --blob2: rgba(236, 72, 153, 0.14);
+    --blob3: rgba(59, 130, 246, 0.14);
   }
 }
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@layer utilities {
+  .app-bg {
+    background: radial-gradient(1200px 600px at 10% -10%, var(--blob1), transparent 60%), radial-gradient(800px 400px at 90% 10%, var(--blob2), transparent 60%), radial-gradient(900px 500px at 50% 110%, var(--blob3), transparent 60%),
+      linear-gradient(to bottom, rgba(2, 6, 23, 0.98), rgba(11, 18, 32, 0.98) 35%, rgba(15, 23, 42, 1));
+  }
+  .card {
+    @apply rounded-lg md:rounded-xl border border-white/10 bg-white/5 shadow-xl overflow-hidden;
+  }
+  .hide-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .row-mask::after {
+    /* fade kanan kiri kayak Netflix */
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(90deg, var(--bg), transparent 80%), linear-gradient(-90deg, var(--bg), transparent 80%);
+    mask: linear-gradient(#000 0 0); /* make it sit on top only on the sides */
+  }
 }
