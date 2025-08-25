@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import SearchBar from "./SearchBar";
 import { Bell, Menu, X, User } from "lucide-react";
@@ -16,7 +16,6 @@ function NavItem({ href, label }: { href: string; label: string }) {
       className={[
         "relative px-1 py-1 text-sm transition-colors",
         isActive ? "text-white" : "text-white/80 hover:text-white",
-        // underline gradient animasi
         "after:content-[''] after:absolute after:left-0 after:-bottom-0.5 after:h-[2px]",
         "after:bg-gradient-to-r after:from-indigo-400 after:to-fuchsia-400",
         "after:transition-all after:duration-300",
@@ -26,6 +25,10 @@ function NavItem({ href, label }: { href: string; label: string }) {
       {label}
     </Link>
   );
+}
+
+function SearchBarFallback() {
+  return <div className="h-9 w-full rounded-full bg-white/10 border border-white/10 animate-pulse" />;
 }
 
 export default function Header() {
@@ -41,7 +44,7 @@ export default function Header() {
 
   const shell = "sticky top-0 z-50 transition-colors duration-300 border-b";
   const styleWhenTop = "bg-gradient-to-b from-black/40 to-transparent border-transparent";
-  const styleWhenScrolled = "bg-black/70 backdrop-blur-lg border-white/10 shadow-[0_4px_30px_rgba(0,0,0,.25)]";
+  const styleWhenScrolled = "bg-black/70 backdrop-blur-lg border-white/10 shadow-[0_8px_30px_rgba(0,0,0,.35)]";
 
   return (
     <header className={`${shell} ${scrolled ? styleWhenScrolled : styleWhenTop}`}>
@@ -57,10 +60,12 @@ export default function Header() {
           <NavItem href="#trending" label="Trending" />
         </nav>
 
-        {/* search (center) */}
+        {/* search (center) — wrap with Suspense */}
         <div className="hidden md:flex flex-1 justify-center">
           <div className="w-full max-w-xl">
-            <SearchBar />
+            <Suspense fallback={<SearchBarFallback />}>
+              <SearchBar />
+            </Suspense>
           </div>
         </div>
 
@@ -87,7 +92,9 @@ export default function Header() {
         <div className="md:hidden border-t border-white/10 bg-black/75 backdrop-blur-lg">
           <div className="px-4 py-3">
             <div className="mb-3">
-              <SearchBar />
+              <Suspense fallback={<SearchBarFallback />}>
+                <SearchBar />
+              </Suspense>
             </div>
             <div className="flex flex-col gap-3">
               <NavItem href="/anime" label="Explore" />

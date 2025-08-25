@@ -1,7 +1,11 @@
 // src/lib/anilist.ts
 export const ANILIST_ENDPOINT = "https://graphql.anilist.co";
 
-export async function anilistGQL<T>(query: string, variables?: Record<string, any>): Promise<T> {
+/** Tipe variabel GraphQL yang aman (tanpa any) */
+type GraphQLVariables = Record<string, unknown>;
+
+/** Helper request ke AniList (tanpa any) */
+export async function anilistGQL<TData, TVariables extends GraphQLVariables = GraphQLVariables>(query: string, variables?: TVariables): Promise<TData> {
   const res = await fetch(ANILIST_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -9,7 +13,7 @@ export async function anilistGQL<T>(query: string, variables?: Record<string, an
     next: { revalidate: 60 },
   });
   if (!res.ok) throw new Error(`AniList error: ${res.status} ${await res.text()}`);
-  const json = (await res.json()) as { data: T };
+  const json = (await res.json()) as { data: TData };
   return json.data;
 }
 
@@ -55,7 +59,7 @@ export async function fetchTrending(page = 1, perPage = 24): Promise<{ items: Me
       }
     }
   `;
-  const d = await anilistGQL<{ Page: { media: Media[] } }>(q, { page, perPage });
+  const d = await anilistGQL<{ Page: { media: Media[] } }, { page: number; perPage: number }>(q, { page, perPage });
   return { items: d.Page.media };
 }
 
@@ -78,7 +82,7 @@ export async function fetchPopular(page = 1, perPage = 24): Promise<{ items: Med
       }
     }
   `;
-  const d = await anilistGQL<{ Page: { media: Media[] } }>(q, { page, perPage });
+  const d = await anilistGQL<{ Page: { media: Media[] } }, { page: number; perPage: number }>(q, { page, perPage });
   return { items: d.Page.media };
 }
 
@@ -101,7 +105,7 @@ export async function fetchTopRated(page = 1, perPage = 24): Promise<{ items: Me
       }
     }
   `;
-  const d = await anilistGQL<{ Page: { media: Media[] } }>(q, { page, perPage });
+  const d = await anilistGQL<{ Page: { media: Media[] } }, { page: number; perPage: number }>(q, { page, perPage });
   return { items: d.Page.media };
 }
 
@@ -125,7 +129,11 @@ export async function fetchSeasonal(perPage = 24): Promise<{ items: Media[] }> {
       }
     }
   `;
-  const d = await anilistGQL<{ Page: { media: Media[] } }>(q, { season, seasonYear, perPage });
+  const d = await anilistGQL<{ Page: { media: Media[] } }, { season: string; seasonYear: number; perPage: number }>(q, {
+    season,
+    seasonYear,
+    perPage,
+  });
   return { items: d.Page.media };
 }
 
@@ -146,7 +154,11 @@ export async function searchAnime(qs: string, page = 1, perPage = 24): Promise<{
       }
     }
   `;
-  const d = await anilistGQL<{ Page: { media: Media[] } }>(q, { q: qs, page, perPage });
+  const d = await anilistGQL<{ Page: { media: Media[] } }, { q: string; page: number; perPage: number }>(q, {
+    q: qs,
+    page,
+    perPage,
+  });
   return { items: d.Page.media };
 }
 
@@ -168,6 +180,6 @@ export async function fetchAnimeById(id: number): Promise<Media> {
       }
     }
   `;
-  const d = await anilistGQL<{ Media: Media }>(q, { id });
+  const d = await anilistGQL<{ Media: Media }, { id: number }>(q, { id });
   return d.Media;
 }
