@@ -16,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${plusJakarta.className} min-h-screen app-bg`}>
         <Header />
         {children}
-        <footer className="py-10 text-center opacity-60 text-xs">Data by AniList. This is a demo app.</footer>
+        <footer className="py-10 text-center opacity-60 text-xs">Data by AniList.</footer>
       </body>
     </html>
   );

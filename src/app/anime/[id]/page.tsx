@@ -38,7 +38,6 @@ export default async function AnimeDetail({ params }: { params: { id: string } }
                   </li>
                 ))}
               </ul>
-              <p className="text-xs opacity-60 mt-2">Daftar episode ini **dummy** untuk demo. Jangan gunakan untuk streaming bajakan.</p>
             </div>
           </div>
 
