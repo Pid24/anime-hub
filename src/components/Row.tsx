@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import type { Media } from "@/lib/anilist";
 import PreviewCard from "./PreviewCard";
 
@@ -10,7 +11,7 @@ function hasTrailer(m: Media) {
   return Boolean(m?.trailer?.id && site === "youtube");
 }
 
-export default function Row({ title, items }: { title: string; items: Media[] }) {
+export default function Row({ title, items, href }: { title: string; items: Media[]; href?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const scrollBy = (dx: number) => ref.current?.scrollBy({ left: dx, behavior: "smooth" });
 
@@ -22,14 +23,21 @@ export default function Row({ title, items }: { title: string; items: Media[] })
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <h2 className="text-xl md:text-2xl font-bold mb-3">{title}</h2>
+      {/* Wrapper Judul dan Tombol Lihat Semua */}
+      <div className="flex items-end justify-between mb-3">
+        <h2 className="text-xl md:text-2xl font-bold">{title}</h2>
+        {href && (
+          <Link href={href} className="text-sm font-semibold text-white/70 hover:text-white flex items-center gap-1 transition-colors pb-0.5">
+            Lihat Semua <ArrowRight className="h-4 w-4" />
+          </Link>
+        )}
+      </div>
 
       <div className="relative group">
         {/* tombol kiri */}
         <button
           onClick={() => scrollBy(-800)}
-          className="hidden md:flex items-center justify-center absolute left-0 top-1/2 -translate-y-1/2 z-20
-                     h-10 w-10 rounded-full bg-black/60 border border-white/10 opacity-0 group-hover:opacity-100"
+          className="hidden md:flex items-center justify-center absolute left-0 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-black/60 border border-white/10 opacity-0 group-hover:opacity-100"
           aria-label="Scroll left"
         >
           <ChevronLeft className="h-6 w-6" />
@@ -45,8 +53,7 @@ export default function Row({ title, items }: { title: string; items: Media[] })
         {/* tombol kanan */}
         <button
           onClick={() => scrollBy(800)}
-          className="hidden md:flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2 z-20
-                     h-10 w-10 rounded-full bg-black/60 border border-white/10 opacity-0 group-hover:opacity-100"
+          className="hidden md:flex items-center justify-center absolute right-0 top-1/2 -translate-y-1/2 z-20 h-10 w-10 rounded-full bg-black/60 border border-white/10 opacity-0 group-hover:opacity-100"
           aria-label="Scroll right"
         >
           <ChevronRight className="h-6 w-6" />

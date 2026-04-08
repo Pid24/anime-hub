@@ -17,7 +17,8 @@ export default function Banner({ items, intervalMs = 7000 }: Props) {
       .filter((m) => {
         if (seen.has(m.id)) return false;
         seen.add(m.id);
-        return Boolean(m.bannerImage || m.coverImage?.extraLarge || m.coverImage?.large);
+        // Hapus fallback coverImage, WAJIB punya bannerImage
+        return Boolean(m.bannerImage);
       })
       .slice(0, 50);
   }, [items]);
@@ -38,7 +39,7 @@ export default function Banner({ items, intervalMs = 7000 }: Props) {
   const title = item.title.english || item.title.romaji || item.title.native || "Untitled";
   const descRaw = item.description ? htmlToText(item.description, { wordwrap: 100 }) : "";
   const desc = descRaw.slice(0, 180) + (descRaw.length > 180 ? "…" : "");
-  const bg = item.bannerImage || item.coverImage?.extraLarge || item.coverImage?.large;
+  const bg = item.bannerImage;
 
   const blurURL = shimmerDataURL(1200, 600);
   const progress = slides.length ? ((idx + 1) / slides.length) * 100 : 0; // <-- 1 garis progress
@@ -53,17 +54,19 @@ export default function Banner({ items, intervalMs = 7000 }: Props) {
       </AnimatePresence>
 
       {/* text */}
-      <div className="absolute bottom-0 left-0 right-0 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-          <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", damping: 18 }} className="text-3xl md:text-5xl font-extrabold drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">
-            {title}
-          </motion.h1>
-          <p className="mt-2 max-w-2xl text-sm md:text-base text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">{desc}</p>
-          <div className="mt-4 flex items-center gap-3">
-            <Link href={`/anime/${item.id}`} className="px-5 py-2.5 rounded-lg bg-white text-black font-semibold">
-              Lihat Detail
-            </Link>
-          </div>
+      <div className="absolute bottom-0 left-0 right-0 text-white z-10 pointer-events-none">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 pointer-events-auto">
+          <AnimatePresence mode="wait">
+            <motion.div key={item.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.5, ease: "easeOut" }}>
+              <h1 className="text-3xl md:text-5xl font-extrabold drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)]">{title}</h1>
+              <p className="mt-2 max-w-2xl text-sm md:text-base text-white/90 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">{desc}</p>
+              <div className="mt-4 flex items-center gap-3">
+                <Link href={`/anime/${item.id}`} className="px-5 py-2.5 rounded-lg bg-white text-black font-semibold hover:bg-gray-200 transition-colors">
+                  Lihat Detail
+                </Link>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 

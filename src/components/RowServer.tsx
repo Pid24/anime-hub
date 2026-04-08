@@ -11,6 +11,16 @@ export default async function RowServer({ type, title, limit = 20 }: Props) {
     seasonal: () => fetchSeasonal(limit),
   } as const;
 
-  const { items } = await fetchers[type](); // <-- data diambil DI SINI
-  return <Row title={title} items={items} />; // Row client component kamu (dengan hover trailer + filter)
+  // Pemetaan rute untuk tombol "Lihat Semua"
+  const paths = {
+    trending: "/trending",
+    popular: "/popular",
+    top: "/top",
+    seasonal: "/seasonal",
+  } as const;
+
+  const { items } = await fetchers[type]();
+
+  // Lempar props href ke komponen client
+  return <Row title={title} items={items} href={paths[type]} />;
 }

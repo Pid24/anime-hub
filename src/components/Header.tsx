@@ -6,21 +6,26 @@ import { usePathname } from "next/navigation";
 import SearchBar from "./SearchBar";
 import { Bell, Menu, X, User } from "lucide-react";
 
-function NavItem({ href, label }: { href: string; label: string }) {
+function NavItem({ href, label, onClick }: { href: string; label: string; onClick?: () => void }) {
   const pathname = usePathname();
-  const isActive = href.startsWith("#") ? false : pathname.startsWith(href);
+
+  // Sederhanakan logika active state. Hapus pengecekan anchor (#)
+  const isActive = pathname === href;
+
+  const classes = [
+    "relative px-1 py-1 text-sm transition-colors",
+    isActive ? "text-white" : "text-white/80 hover:text-white",
+    "after:content-[''] after:absolute after:left-0 after:-bottom-0.5 after:h-[2px]",
+    "after:bg-gradient-to-r after:from-indigo-400 after:to-fuchsia-400",
+    "after:transition-all after:duration-300",
+    isActive ? "after:w-full" : "after:w-0 hover:after:w-full",
+  ].join(" ");
 
   return (
     <Link
       href={href}
-      className={[
-        "relative px-1 py-1 text-sm transition-colors",
-        isActive ? "text-white" : "text-white/80 hover:text-white",
-        "after:content-[''] after:absolute after:left-0 after:-bottom-0.5 after:h-[2px]",
-        "after:bg-gradient-to-r after:from-indigo-400 after:to-fuchsia-400",
-        "after:transition-all after:duration-300",
-        isActive ? "after:w-full" : "after:w-0 hover:after:w-full",
-      ].join(" ")}
+      onClick={onClick} // Hapus custom click handler, biarkan Next.js yang atur navigasinya
+      className={classes}
     >
       {label}
     </Link>
@@ -57,7 +62,7 @@ export default function Header() {
         {/* nav desktop */}
         <nav className="hidden md:flex items-center gap-5">
           <NavItem href="/anime" label="Explore" />
-          <NavItem href="#trending" label="Trending" />
+          <NavItem href="/trending" label="Trending" />
         </nav>
 
         {/* search (center) — wrap with Suspense */}
@@ -98,7 +103,7 @@ export default function Header() {
             </div>
             <div className="flex flex-col gap-3">
               <NavItem href="/anime" label="Explore" />
-              <NavItem href="#trending" label="Trending" />
+              <NavItem href="/trending" label="Trending" />
             </div>
           </div>
         </div>
