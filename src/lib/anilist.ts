@@ -31,6 +31,19 @@ export type Media = {
   trailer?: { id?: string | null; site?: string | null } | null;
 };
 
+export type PageInfo = {
+  total: number;
+  currentPage: number;
+  lastPage: number;
+  hasNextPage: boolean;
+  perPage: number;
+};
+
+export type PaginatedResult = {
+  items: Media[];
+  pageInfo: PageInfo;
+};
+
 export function currentSeason(d = new Date()) {
   const m = d.getUTCMonth() + 1;
   const y = d.getUTCFullYear();
@@ -43,7 +56,7 @@ export async function fetchTrending(page = 1, perPage = 24): Promise<{ items: Me
   const q = `
     query ($page: Int, $perPage: Int) {
       Page(page: $page, perPage: $perPage) {
-        media(type: ANIME, sort: TRENDING_DESC) {
+        media(type: ANIME, sort: TRENDING_DESC, isAdult: false) {
           id
           title { romaji english native }
           description
@@ -67,7 +80,7 @@ export async function fetchPopular(page = 1, perPage = 24): Promise<{ items: Med
   const q = `
     query ($page: Int, $perPage: Int) {
       Page(page: $page, perPage: $perPage) {
-        media(type: ANIME, sort: POPULARITY_DESC) {
+        media(type: ANIME, sort: POPULARITY_DESC, isAdult: false) {
           id
           title { romaji english native }
           description
@@ -90,7 +103,7 @@ export async function fetchTopRated(page = 1, perPage = 24): Promise<{ items: Me
   const q = `
     query ($page: Int, $perPage: Int) {
       Page(page: $page, perPage: $perPage) {
-        media(type: ANIME, sort: SCORE_DESC) {
+        media(type: ANIME, sort: SCORE_DESC, isAdult: false) {
           id
           title { romaji english native }
           description
@@ -114,7 +127,7 @@ export async function fetchSeasonal(perPage = 24): Promise<{ items: Media[] }> {
   const q = `
     query ($season: MediaSeason, $seasonYear: Int, $perPage: Int) {
       Page(page: 1, perPage: $perPage) {
-        media(type: ANIME, season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC) {
+        media(type: ANIME, season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC, isAdult: false) {
           id
           title { romaji english native }
           description
@@ -137,11 +150,78 @@ export async function fetchSeasonal(perPage = 24): Promise<{ items: Media[] }> {
   return { items: d.Page.media };
 }
 
+// ===== PAGINATED VARIANTS (with pageInfo for infinite scroll) =====
+
+const MEDIA_FIELDS = `
+  id
+  title { romaji english native }
+  description
+  coverImage { extraLarge large color }
+  bannerImage
+  averageScore
+  episodes
+  seasonYear
+  format
+  genres
+  trailer { id site }
+`;
+
+export async function fetchSeasonalPaginated(page = 1, perPage = 24): Promise<PaginatedResult> {
+  const { season, seasonYear } = currentSeason();
+  const q = `
+    query ($page: Int, $perPage: Int, $season: MediaSeason, $seasonYear: Int) {
+      Page(page: $page, perPage: $perPage) {
+        pageInfo {
+          total
+          currentPage
+          lastPage
+          hasNextPage
+          perPage
+        }
+        media(type: ANIME, season: $season, seasonYear: $seasonYear, sort: POPULARITY_DESC, isAdult: false) {
+          ${MEDIA_FIELDS}
+        }
+      }
+    }
+  `;
+  const d = await anilistGQL<{ Page: { pageInfo: PageInfo; media: Media[] } }>(q, {
+    page,
+    perPage,
+    season,
+    seasonYear,
+  });
+  return { items: d.Page.media, pageInfo: d.Page.pageInfo };
+}
+
+export async function fetchPopularPaginated(page = 1, perPage = 24): Promise<PaginatedResult> {
+  const q = `
+    query ($page: Int, $perPage: Int) {
+      Page(page: $page, perPage: $perPage) {
+        pageInfo {
+          total
+          currentPage
+          lastPage
+          hasNextPage
+          perPage
+        }
+        media(type: ANIME, sort: POPULARITY_DESC, isAdult: false) {
+          ${MEDIA_FIELDS}
+        }
+      }
+    }
+  `;
+  const d = await anilistGQL<{ Page: { pageInfo: PageInfo; media: Media[] } }>(q, {
+    page,
+    perPage,
+  });
+  return { items: d.Page.media, pageInfo: d.Page.pageInfo };
+}
+
 export async function searchAnime(qs: string, page = 1, perPage = 24): Promise<{ items: Media[] }> {
   const q = `
     query ($q: String, $page: Int, $perPage: Int) {
       Page(page: $page, perPage: $perPage) {
-        media(search: $q, type: ANIME, sort: POPULARITY_DESC) {
+        media(search: $q, type: ANIME, sort: POPULARITY_DESC, isAdult: false) {
           id
           title { romaji english native }
           coverImage { extraLarge large }

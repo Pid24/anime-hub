@@ -12,7 +12,7 @@ type Media = {
 const QUERY = `
 query ($page: Int, $perPage: Int) {
   Page(page: $page, perPage: $perPage) {
-    media(type: ANIME, status: RELEASING, sort: TRENDING_DESC) {
+    media(type: ANIME, status: RELEASING, sort: TRENDING_DESC, isAdult: false) {
       id
       title { romaji english }
       coverImage { large }
