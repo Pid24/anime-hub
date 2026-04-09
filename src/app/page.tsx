@@ -9,13 +9,14 @@ export default async function Page() {
   const heroCandidates = [...trending.items, ...popular.items];
 
   return (
-    <main className="min-h-screen pb-10">
+    <main className="homepage min-h-screen pb-4">
       <Banner items={heroCandidates} intervalMs={7000} />
 
       {/* Wrapper utama untuk daftar Row dengan Ambient Glow */}
-      <div className="relative flex flex-col space-y-4 md:space-y-8 pt-8">
-        {/* Efek cahaya ambient (Glow) di background, tidak mengganggu klik */}
-        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-500/10 blur-[120px] rounded-full z-0" />
+      <div className="relative flex flex-col space-y-2 md:space-y-4 pt-6 md:pt-8 overflow-hidden">
+        {/* Ambient glow effects */}
+        <div className="pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-indigo-500/8 blur-[150px] rounded-full z-0" />
+        <div className="pointer-events-none absolute top-[60%] right-0 w-[500px] h-[400px] bg-fuchsia-500/6 blur-[130px] rounded-full z-0 translate-x-1/3" />
 
         <div id="trending" className="scroll-mt-24 relative z-10">
           <Suspense fallback={<RowSkeleton title="Trending Now" />}>
@@ -41,11 +42,6 @@ export default async function Page() {
           </Suspense>
         </div>
       </div>
-
-      {/* Footer Minimalis */}
-      <footer className="mt-16 border-t border-white/5 pt-8 pb-12 text-center relative z-10">
-        <p className="text-sm text-white/40 font-medium">© {new Date().getFullYear()} AnimeHub. Data provided by AniList.</p>
-      </footer>
     </main>
   );
 }

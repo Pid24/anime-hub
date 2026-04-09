@@ -17,9 +17,6 @@ export default async function TrendingPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-medium text-white/70 hover:text-white mb-4 transition-colors">
-            <ArrowLeft className="h-4 w-4" /> Kembali ke Beranda
-          </Link>
           <h1 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-fuchsia-400">Trending Now</h1>
           <p className="mt-2 text-white/80">Anime paling populer yang sedang hangat diperbincangkan saat ini.</p>
         </div>

@@ -1,21 +1,13 @@
 @import "tailwindcss";
 
-/* Tema & background */
+/* Tema & background — always dark */
 :root {
-  --bg: #0b1220;
+  --bg: #080c16;
   --fg: #e5e7eb;
   --blob1: rgba(79, 70, 229, 0.22);
   --blob2: rgba(236, 72, 153, 0.18);
   --blob3: rgba(59, 130, 246, 0.18);
-}
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #ffffff;
-    --fg: #171717;
-    --blob1: rgba(79, 70, 229, 0.18);
-    --blob2: rgba(236, 72, 153, 0.14);
-    --blob3: rgba(59, 130, 246, 0.14);
-  }
+  color-scheme: dark;
 }
 body {
   background: var(--bg);

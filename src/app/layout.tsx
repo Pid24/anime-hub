@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="id" className="h-full scroll-smooth">
       {/* Tambahkan flex dan flex-col agar layout bisa mendistribusikan ruang kosong */}
-      <body className={`${plusJakarta.className} min-h-screen flex flex-col app-bg`}>
+      <body className={`${plusJakarta.className} min-h-screen flex flex-col app-bg overflow-x-hidden`}>
         <Header />
 
         {/* flex-1 akan memaksa konten utama mengambil seluruh sisa ruang layar, mendorong footer ke bawah */}

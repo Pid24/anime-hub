@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Media } from "@/lib/anilist";
 import { useEffect, useRef, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX, Star } from "lucide-react";
 
 const AUDIO_KEY = "ah:audio"; // on|off
 
@@ -71,8 +71,13 @@ export default function PreviewCard({ m }: { m: Media }) {
   const iframeSrc = youTubeId ? `https://www.youtube.com/embed/${youTubeId}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&enablejsapi=1&origin=${origin}` : "";
 
   return (
-    <div className="snap-start shrink-0 w-40 sm:w-44 md:w-48 lg:w-56" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
-      <div className="card relative aspect-[2/3] transition-transform duration-300 hover:scale-[1.04] overflow-hidden">
+    <div className="snap-start shrink-0 w-40 sm:w-44 md:w-48 lg:w-56 group/card" onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+      <div className="relative aspect-[2/3] rounded-xl md:rounded-2xl overflow-hidden
+                      border border-white/[0.08] bg-white/[0.03]
+                      shadow-[0_4px_20px_rgba(0,0,0,0.3)]
+                      transition-all duration-300
+                      group-hover/card:scale-[1.04] group-hover/card:shadow-[0_8px_40px_rgba(0,0,0,0.5),0_0_20px_rgba(99,102,241,0.1)]
+                      group-hover/card:border-white/15">
         {/* media area */}
         <div className="absolute inset-0">
           {play && youTubeId ? (
@@ -80,9 +85,18 @@ export default function PreviewCard({ m }: { m: Media }) {
           ) : m.coverImage?.extraLarge || m.coverImage?.large ? (
             <Image src={m.coverImage.extraLarge ?? m.coverImage.large!} alt={title} fill sizes="240px" className="object-cover" />
           ) : null}
-          {/* gradient bawah utk teks */}
-          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/85 to-transparent" />
+          {/* gradient overlay */}
+          <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
         </div>
+
+        {/* Score badge (top-left) */}
+        {m.averageScore && (
+          <div className="absolute top-2 left-2 z-20 flex items-center gap-1 px-2 py-0.5 rounded-full
+                          bg-black/60 backdrop-blur-sm border border-white/10 text-[10px] font-bold text-white">
+            <Star className="h-2.5 w-2.5 text-amber-400 fill-amber-400" />
+            {m.averageScore}%
+          </div>
+        )}
 
         {/* tombol speaker (muncul saat hover) */}
         {youTubeId && (
@@ -92,32 +106,43 @@ export default function PreviewCard({ m }: { m: Media }) {
               e.preventDefault();
               enableAudio();
             }}
-            className="absolute top-2 right-2 z-20 h-8 w-8 rounded-full bg-black/60 border border-white/20 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 hover:bg-black/70"
+            className="absolute top-2 right-2 z-20 h-7 w-7 rounded-full bg-black/60 backdrop-blur-sm
+                       border border-white/15 flex items-center justify-center text-white
+                       opacity-0 group-hover/card:opacity-100 hover:bg-black/80 transition-all duration-300"
             title={audioOn ? "Suara aktif" : "Aktifkan suara"}
             aria-label={audioOn ? "Suara aktif" : "Aktifkan suara"}
           >
-            {audioOn ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            {audioOn ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
           </button>
         )}
 
         {/* info compact (teks putih) */}
-        <div className="absolute inset-x-0 bottom-0 p-2 text-[11px] leading-tight text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
-          <div className="font-semibold line-clamp-2">{title}</div>
-          <div className="text-white/90 mt-1">
+        <div className="absolute inset-x-0 bottom-0 p-3 text-white z-10">
+          <div className="font-semibold text-[12px] leading-snug line-clamp-2 drop-shadow-[0_1px_4px_rgba(0,0,0,0.9)]">
+            {title}
+          </div>
+          <div className="text-white/70 text-[10px] mt-1 font-medium">
             {m.seasonYear ?? "—"} • {m.format ?? "TV"}
-            {m.averageScore ? ` • ${m.averageScore}%` : ""}
           </div>
           {m.genres && m.genres.length > 0 && (
-            <div className="mt-1 flex flex-wrap gap-1">
-              {m.genres.slice(0, 3).map((g) => (
-                <span key={g} className="px-1.5 py-0.5 rounded bg-white/20 border border-white/20 text-white/95">
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {m.genres.slice(0, 2).map((g) => (
+                <span
+                  key={g}
+                  className="px-1.5 py-0.5 rounded-md bg-white/10 border border-white/10
+                             text-[9px] font-medium text-white/80"
+                >
                   {g}
                 </span>
               ))}
             </div>
           )}
           <div className="mt-2">
-            <Link href={`/anime/${m.id}`} className="inline-block px-2 py-1 rounded bg-white text-black font-semibold">
+            <Link
+              href={`/anime/${m.id}`}
+              className="inline-flex items-center px-3 py-1.5 rounded-lg text-[11px] font-semibold
+                         bg-white text-black hover:bg-gray-100 transition-colors"
+            >
               Detail
             </Link>
           </div>

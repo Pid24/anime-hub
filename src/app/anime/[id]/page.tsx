@@ -62,46 +62,28 @@ export default async function AnimeDetail({ params }: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0e1a] via-[#0a0e1a]/70 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0a0e1a]/60 via-transparent to-[#0a0e1a]/30" />
         <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-[#0a0e1a] to-transparent" />
-
-        {/* Back button */}
-        <div className="absolute top-0 left-0 right-0 z-30 pt-20 md:pt-24">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Link
-              href="/"
-              className="group inline-flex items-center gap-2.5 text-sm font-semibold text-white/70 hover:text-white
-                         px-4 py-2 rounded-full bg-white/5 backdrop-blur-md border border-white/10
-                         hover:bg-white/10 hover:border-white/20 transition-all duration-300"
-            >
-              <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-              Kembali
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* ===== HERO SECTION: Poster + Title + Meta (sejajar) ===== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 -mt-24 sm:-mt-32 lg:-mt-40">
         <div className="flex flex-col sm:flex-row items-center sm:items-end gap-5 sm:gap-6 lg:gap-8">
-
           {/* Poster Card — naik ke banner */}
           {anime.coverImage?.extraLarge && (
             <div className="group relative flex-shrink-0 w-[160px] sm:w-[180px] md:w-[200px] lg:w-[220px]">
-              <div className="relative aspect-[2/3] rounded-2xl overflow-hidden
+              <div
+                className="relative aspect-[2/3] rounded-2xl overflow-hidden
                               shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_40px_rgba(99,102,241,0.15)]
-                              border border-white/15 transition-transform duration-500 group-hover:scale-[1.02]">
-                <Image
-                  src={anime.coverImage.extraLarge}
-                  alt={title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 160px, (max-width: 768px) 180px, (max-width: 1024px) 200px, 220px"
-                />
+                              border border-white/15 transition-transform duration-500 group-hover:scale-[1.02]"
+              >
+                <Image src={anime.coverImage.extraLarge} alt={title} fill className="object-cover" sizes="(max-width: 640px) 160px, (max-width: 768px) 180px, (max-width: 1024px) 200px, 220px" />
                 {/* Score Badge */}
                 {score > 0 && (
                   <div className="absolute top-3 right-3">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full
+                    <div
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-full
                                     bg-black/70 backdrop-blur-md border border-white/20
-                                    shadow-[0_4px_12px_rgba(0,0,0,0.4)]">
+                                    shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
+                    >
                       <Star className="h-3 w-3 text-amber-400 fill-amber-400" />
                       <span className="text-xs font-bold text-white">{(score / 10).toFixed(1)}</span>
                     </div>
@@ -115,12 +97,8 @@ export default async function AnimeDetail({ params }: Props) {
 
           {/* Title + Meta info — sejajar bawah poster */}
           <div className="flex-1 min-w-0 text-center sm:text-left pb-1">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.1]">
-              {title}
-            </h1>
-            {altTitle && (
-              <p className="text-sm md:text-base text-white/40 mt-1.5 font-medium">{altTitle}</p>
-            )}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.1]">{title}</h1>
+            {altTitle && <p className="text-sm md:text-base text-white/40 mt-1.5 font-medium">{altTitle}</p>}
 
             {/* Meta tags inline */}
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-3 text-sm">
@@ -176,12 +154,13 @@ export default async function AnimeDetail({ params }: Props) {
 
       {/* ===== MAIN CONTENT: Trailer, Synopsis, Episodes (full width) ===== */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 mt-8 md:mt-10 space-y-8">
-
         {/* Trailer */}
         {anime.trailer?.id && (
-          <div className="rounded-2xl overflow-hidden border border-white/10
+          <div
+            className="rounded-2xl overflow-hidden border border-white/10
                           shadow-[0_8px_40px_rgba(0,0,0,0.5),0_0_20px_rgba(99,102,241,0.08)]
-                          bg-black/60 backdrop-blur-md">
+                          bg-black/60 backdrop-blur-md"
+          >
             <Player trailerId={anime.trailer.id} trailerSite={anime.trailer.site} />
           </div>
         )}
@@ -192,9 +171,7 @@ export default async function AnimeDetail({ params }: Props) {
             <span className="w-1 h-6 rounded-full bg-gradient-to-b from-indigo-400 to-violet-600" />
             Sinopsis
           </h3>
-          <p className="text-white/70 leading-[1.8] text-[15px] whitespace-pre-line">
-            {desc || "Sinopsis tidak tersedia untuk judul ini."}
-          </p>
+          <p className="text-white/70 leading-[1.8] text-[15px] whitespace-pre-line">{desc || "Sinopsis tidak tersedia untuk judul ini."}</p>
         </div>
 
         {/* Episode List */}
@@ -204,9 +181,7 @@ export default async function AnimeDetail({ params }: Props) {
               <span className="w-1 h-6 rounded-full bg-gradient-to-b from-fuchsia-400 to-pink-600" />
               Daftar Episode
             </h3>
-            <span className="text-xs font-semibold text-white/30 bg-white/5 px-3 py-1 rounded-full border border-white/5">
-              {episodes} Episode
-            </span>
+            <span className="text-xs font-semibold text-white/30 bg-white/5 px-3 py-1 rounded-full border border-white/5">{episodes} Episode</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
             {Array.from({ length: episodes }).map((_, i) => (
@@ -222,8 +197,10 @@ export default async function AnimeDetail({ params }: Props) {
                 <span className="text-white/60 group-hover:text-white transition-colors">Eps {i + 1}</span>
                 <PlayCircle className="h-4 w-4 text-white/20 group-hover:text-indigo-400 transition-all duration-300 group-hover:scale-110" />
                 {/* Hover glow */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500
-                                bg-gradient-to-r from-indigo-500/5 to-transparent pointer-events-none" />
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500
+                                bg-gradient-to-r from-indigo-500/5 to-transparent pointer-events-none"
+                />
               </button>
             ))}
           </div>
