@@ -183,3 +183,38 @@ export async function fetchAnimeById(id: number): Promise<Media> {
   const d = await anilistGQL<{ Media: Media }, { id: number }>(q, { id });
   return d.Media;
 }
+
+// ===== ADVANCED SEARCH & FILTERING =====
+export async function fetchAdvancedSearch(params: { search?: string; genre?: string; year?: number; format?: string; sort?: string; page?: number }): Promise<{ items: Media[] }> {
+  const q = `
+    query ($page: Int, $search: String, $genre: String, $year: Int, $format: MediaFormat, $sort: [MediaSort]) {
+      Page(page: $page, perPage: 40) {
+        media(search: $search, genre: $genre, seasonYear: $year, format: $format, sort: $sort, type: ANIME, isAdult: false) {
+          id
+          title { romaji english native }
+          description
+          coverImage { extraLarge large color }
+          bannerImage
+          averageScore
+          episodes
+          seasonYear
+          format
+          genres
+          trailer { id site }
+        }
+      }
+    }
+  `;
+
+  const variables: Record<string, unknown> = { page: params.page || 1 };
+  if (params.search) variables.search = params.search;
+  if (params.genre) variables.genre = params.genre;
+  if (params.year) variables.year = params.year;
+  if (params.format) variables.format = params.format;
+
+  // Default sorting jika tidak ada parameter yang dilempar
+  variables.sort = params.sort ? [params.sort] : ["POPULARITY_DESC"];
+
+  const d = await anilistGQL<{ Page: { media: Media[] } }>(q, variables);
+  return { items: d.Page.media };
+}
