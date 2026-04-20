@@ -9,7 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@consumet/extensions": "^1.8.8",
     "framer-motion": "^12.23.12",
+    "got-scraping": "^4.2.1",
+    "hls.js": "^1.6.16",
     "html-to-text": "^9.0.5",
     "lucide-react": "^0.541.0",
     "next": "^16.2.3",

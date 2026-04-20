@@ -67,4 +67,47 @@ body {
       0 12px 40px rgba(0, 0, 0, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
   }
+
+  /* ===== Watch Page ===== */
+  .watch-page {
+    background: linear-gradient(180deg, #080c16 0%, #0a0e1a 30%, #0d1117 60%, #111827 100%);
+    color: #e5e7eb;
+  }
+
+  /* ===== Video Container ===== */
+  .video-container {
+    --vc-glow: rgba(99, 102, 241, 0.08);
+    box-shadow:
+      0 8px 40px rgba(0, 0, 0, 0.5),
+      0 0 20px var(--vc-glow);
+  }
+  .video-container:hover {
+    --vc-glow: rgba(99, 102, 241, 0.12);
+  }
+
+  /* Video player range input (volume) */
+  .video-container input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+    outline: none;
+  }
+  .video-container input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #818cf8;
+    cursor: pointer;
+  }
+  .video-container input[type="range"]::-moz-range-thumb {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #818cf8;
+    border: none;
+    cursor: pointer;
+  }
 }

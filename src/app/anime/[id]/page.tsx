@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, PlayCircle, Star, Calendar, Film, Sparkles } from "lucide-react";
 import Player from "@/components/Player";
+import EpisodeList from "@/components/EpisodeList";
 import { fetchAnimeById } from "@/lib/anilist";
 import { htmlToText } from "html-to-text";
 
@@ -174,37 +175,12 @@ export default async function AnimeDetail({ params }: Props) {
           <p className="text-white/70 leading-[1.8] text-[15px] whitespace-pre-line">{desc || "Sinopsis tidak tersedia untuk judul ini."}</p>
         </div>
 
-        {/* Episode List */}
-        <div className="detail-glass-card p-6 md:p-8">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold flex items-center gap-3 text-white">
-              <span className="w-1 h-6 rounded-full bg-gradient-to-b from-fuchsia-400 to-pink-600" />
-              Daftar Episode
-            </h3>
-            <span className="text-xs font-semibold text-white/30 bg-white/5 px-3 py-1 rounded-full border border-white/5">{episodes} Episode</span>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
-            {Array.from({ length: episodes }).map((_, i) => (
-              <button
-                key={i}
-                className="group relative rounded-xl overflow-hidden
-                           bg-white/[0.03] border border-white/[0.06]
-                           hover:bg-gradient-to-br hover:from-indigo-500/15 hover:to-fuchsia-500/10
-                           hover:border-indigo-500/30
-                           px-4 py-3.5 transition-all duration-300
-                           text-sm font-medium flex items-center justify-between"
-              >
-                <span className="text-white/60 group-hover:text-white transition-colors">Eps {i + 1}</span>
-                <PlayCircle className="h-4 w-4 text-white/20 group-hover:text-indigo-400 transition-all duration-300 group-hover:scale-110" />
-                {/* Hover glow */}
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500
-                                bg-gradient-to-r from-indigo-500/5 to-transparent pointer-events-none"
-                />
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Episode List (Interactive — connected to Gogoanime) */}
+        <EpisodeList
+          animeId={id}
+          animeTitle={title}
+          anilistEpisodeCount={episodes}
+        />
       </div>
     </main>
   );
