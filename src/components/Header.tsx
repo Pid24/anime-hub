@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState, Suspense } from "react";
 import { usePathname } from "next/navigation";
 import SearchBar from "./SearchBar";
-import { Bell, Menu, X, User } from "lucide-react";
+import { Bell, Menu, X, User, Sparkles } from "lucide-react";
 
 function NavItem({ href, label, onClick }: { href: string; label: string; onClick?: () => void }) {
   const pathname = usePathname();
@@ -63,6 +63,7 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-5">
           <NavItem href="/anime" label="Explore" />
           <NavItem href="/trending" label="Trending" />
+          <NavItem href="/recommendation" label="Rekomendasi" />
         </nav>
 
         {/* search (center) — wrap with Suspense */}
@@ -102,8 +103,9 @@ export default function Header() {
               </Suspense>
             </div>
             <div className="flex flex-col gap-3">
-              <NavItem href="/anime" label="Explore" />
-              <NavItem href="/trending" label="Trending" />
+              <NavItem href="/anime" label="Explore" onClick={() => setOpen(false)} />
+              <NavItem href="/trending" label="Trending" onClick={() => setOpen(false)} />
+              <NavItem href="/recommendation" label="Rekomendasi" onClick={() => setOpen(false)} />
             </div>
           </div>
         </div>

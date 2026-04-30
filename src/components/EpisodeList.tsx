@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { PlayCircle, Loader2, AlertTriangle, Search } from "lucide-react";
+import { PlayCircle, Loader2, AlertTriangle, Search, Sparkles } from "lucide-react";
+import { getRecommendedAnimeByAnilistId } from "@/lib/recommendations";
 
 type GogoEpisode = {
   id: string;
@@ -33,7 +34,27 @@ export default function EpisodeList({
   const [providerName, setProviderName] = useState<string>("");
   const [searchFilter, setSearchFilter] = useState("");
 
+  // Check if this anime is in the admin recommendation list (has GDrive episodes)
+  const recommended = getRecommendedAnimeByAnilistId(animeId);
+
   useEffect(() => {
+    // Jika anime ini ada di recommendation list (punya link GDrive),
+    // tidak perlu fetch dari Consumet API — langsung gunakan data lokal
+    if (recommended) {
+      setFound(true);
+      setProviderTitle("Google Drive");
+      setProviderName("Pilihan Admin");
+      setEpisodes(
+        recommended.episodes.map((ep) => ({
+          id: `gdrive-${ep.number}`,
+          number: ep.number,
+        }))
+      );
+      setLoading(false);
+      return;
+    }
+
+    // Kalau bukan anime rekomendasi, fetch dari Consumet API seperti biasa
     let cancelled = false;
 
     async function fetchEpisodes() {
@@ -66,7 +87,7 @@ export default function EpisodeList({
     return () => {
       cancelled = true;
     };
-  }, [animeTitle]);
+  }, [animeTitle, recommended]);
 
   const episodeCount = found ? episodes.length : Math.max(anilistEpisodeCount, 1);
 
@@ -74,6 +95,14 @@ export default function EpisodeList({
   const filteredEpisodes = searchFilter
     ? episodes.filter((ep) => String(ep.number).includes(searchFilter))
     : episodes;
+
+  // Helper: build the correct watch URL based on whether it's a GDrive recommendation or Consumet stream
+  function getWatchUrl(epNumber: number): string {
+    if (recommended) {
+      return `/recommendation/${recommended.slug}?ep=${epNumber}`;
+    }
+    return `/watch/${animeId}?ep=${epNumber}`;
+  }
 
   // Loading State
   if (loading) {
@@ -109,10 +138,18 @@ export default function EpisodeList({
         {/* Status badge */}
         <div className="flex items-center gap-2">
           {found ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Streaming Ready
-            </span>
+            recommended ? (
+              // Special badge for admin-recommended anime with GDrive
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                <Sparkles className="h-3 w-3" />
+                {recommended.badge}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Streaming Ready
+              </span>
+            )
           ) : (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 border border-amber-500/20 text-amber-400">
               <AlertTriangle className="h-3 w-3" />
@@ -122,10 +159,10 @@ export default function EpisodeList({
         </div>
       </div>
 
-      {/* Provider match info */}
-      {found && providerTitle && (
+      {/* Provider match info (only for Consumet-sourced anime, not admin recommendations) */}
+      {found && providerTitle && !recommended && (
         <div className="mb-4 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-white/40">
-          Sumber: <span className="text-white/60 font-medium">{providerTitle}</span>{providerName ? ` via ${providerName}` : ""}
+          Sumber: <span className="text-white/60 font-medium">{providerTitle}</span>{providerName ? ` — ${providerName}` : ""}
         </div>
       )}
 
@@ -151,23 +188,28 @@ export default function EpisodeList({
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5">
           {filteredEpisodes.map((ep) => {
             const isActive = currentEpisode === ep.number;
+            const isGdrive = !!recommended;
             return (
               <Link
                 key={ep.id}
-                href={`/watch/${animeId}?ep=${ep.number}`}
+                href={getWatchUrl(ep.number)}
                 className={`group relative rounded-xl overflow-hidden
                            px-4 py-3.5 transition-all duration-300
                            text-sm font-medium flex items-center justify-between
                            ${
                              isActive
-                               ? "bg-gradient-to-br from-indigo-500/25 to-fuchsia-500/15 border border-indigo-500/40 shadow-lg shadow-indigo-500/10"
-                               : "bg-white/[0.03] border border-white/[0.06] hover:bg-gradient-to-br hover:from-indigo-500/15 hover:to-fuchsia-500/10 hover:border-indigo-500/30"
+                               ? isGdrive
+                                 ? "bg-gradient-to-br from-amber-500/25 to-orange-500/15 border border-amber-500/40 shadow-lg shadow-amber-500/10"
+                                 : "bg-gradient-to-br from-indigo-500/25 to-fuchsia-500/15 border border-indigo-500/40 shadow-lg shadow-indigo-500/10"
+                               : isGdrive
+                                 ? "bg-white/[0.03] border border-white/[0.06] hover:bg-gradient-to-br hover:from-amber-500/15 hover:to-orange-500/10 hover:border-amber-500/30"
+                                 : "bg-white/[0.03] border border-white/[0.06] hover:bg-gradient-to-br hover:from-indigo-500/15 hover:to-fuchsia-500/10 hover:border-indigo-500/30"
                            }`}
               >
                 <span
                   className={`transition-colors ${
                     isActive
-                      ? "text-indigo-300 font-semibold"
+                      ? isGdrive ? "text-amber-300 font-semibold" : "text-indigo-300 font-semibold"
                       : "text-white/60 group-hover:text-white"
                   }`}
                 >
@@ -176,21 +218,23 @@ export default function EpisodeList({
                 <PlayCircle
                   className={`h-4 w-4 transition-all duration-300 ${
                     isActive
-                      ? "text-indigo-400 scale-110"
-                      : "text-white/20 group-hover:text-indigo-400 group-hover:scale-110"
+                      ? isGdrive ? "text-amber-400 scale-110" : "text-indigo-400 scale-110"
+                      : isGdrive
+                        ? "text-white/20 group-hover:text-amber-400 group-hover:scale-110"
+                        : "text-white/20 group-hover:text-indigo-400 group-hover:scale-110"
                   }`}
                 />
                 {/* Hover glow */}
                 <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500
-                               bg-gradient-to-r from-indigo-500/5 to-transparent pointer-events-none"
+                  className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none
+                    ${isGdrive ? "bg-gradient-to-r from-amber-500/5 to-transparent" : "bg-gradient-to-r from-indigo-500/5 to-transparent"}`}
                 />
               </Link>
             );
           })}
         </div>
       ) : !found ? (
-        /* Fallback: dummy episode grid (same as original) */
+        /* Fallback: dummy episode grid */
         <div className="space-y-4">
           <div className="px-3 py-2 rounded-lg bg-amber-500/5 border border-amber-500/10 text-xs text-amber-400/80">
             Episode streaming tidak tersedia dari provider manapun. Menampilkan daftar placeholder.
